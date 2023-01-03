@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "518854918230",
+    "project_id": "organise-me-8aef0",
+    "storage_bucket": "organise-me-8aef0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518854918230:android:98a84ebdc312b7726abbf7",
+        "android_client_info": {
+          "package_name": "com.example.organise_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "518854918230-9ru5r3je15o3p1n7gm45d1hhrnsclrv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeYuT7Y-JIcOIXr4AaY9Q-qVpXOY9BB6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "518854918230-9ru5r3je15o3p1n7gm45d1hhrnsclrv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
