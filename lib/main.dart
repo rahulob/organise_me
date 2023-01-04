@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:organise_me/login_page.dart';
@@ -21,9 +22,15 @@ class MyApp extends StatelessWidget {
       title: 'Organise Me',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
+        scaffoldBackgroundColor: Colors.grey[200],
       ),
-      home: const HomePage(),
+      home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) return const HomePage();
+            return const LoginPage();
+          }),
     );
   }
 }
@@ -38,6 +45,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Home Page')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => FirebaseAuth.instance.signOut(),
+          child: const Text('Sign Out'),
+        ),
+      ),
+    );
   }
 }

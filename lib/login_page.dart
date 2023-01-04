@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -8,13 +9,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _email = '';
-  String _password = '';
-  String _confirmPassword = '';
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _registerUser = true;
   bool _showPassword = false;
- 
+  bool _error = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,50 +33,40 @@ class _LoginPageState extends State<LoginPage> {
                 // Title
                 Text(
                   _registerUser
-                      ? 'Create a new Account'
-                      : 'Sign In to your Account',
+                      ? 'Good to see you! Create a new Account'
+                      : 'Welcome Back! Sign In to your Account',
                   style: Theme.of(context).textTheme.headline4,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
 
                 // Text Inputs
-                TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                  ),
-                  onChanged: ((value) => setState(() => _email = value)),
+                TextInput(
+                  controller: _emailController,
+                  label: 'Email',
                 ),
-                const SizedBox(height: 30),
-                TextField(
+                const SizedBox(height: 10),
+                TextInput(
+                  controller: _passwordController,
                   obscureText: !_showPassword,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                  ),
-                  onChanged: ((value) => setState(() => _password = value)),
+                  label: 'Password',
                 ),
                 Visibility(
                   visible: _registerUser,
                   child: Column(
                     children: [
-                      const SizedBox(height: 30),
-                      TextField(
+                      const SizedBox(height: 10),
+                      TextInput(
+                        controller: _confirmPasswordController,
                         obscureText: !_showPassword,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Confirm Password',
-                        ),
-                        onChanged: ((value) =>
-                            setState(() => _confirmPassword = value)),
+                        label: 'Confirm Password',
                       ),
                     ],
                   ),
                 ),
 
                 // checkbox to show/hide password
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 CheckboxListTile(
                   title: const Text('Show Password'),
                   value: _showPassword,
@@ -83,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   }),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
                 // Login Buttons
                 ElevatedButton(
@@ -96,12 +88,19 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                ElevatedButton(
-                    onPressed: () =>
-                        setState(() => _registerUser = !_registerUser),
-                    child: Text(_registerUser
-                        ? 'Already have an account? Sign In'
-                        : 'New Here? Register now')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(!_registerUser
+                        ? 'New Here?'
+                        : 'Already Have an account?'),
+                    TextButton(
+                        onPressed: () =>
+                            setState(() => _registerUser = !_registerUser),
+                        child:
+                            Text(_registerUser ? 'Sign In' : 'Register now')),
+                  ],
+                ),
               ],
             ),
           ),
@@ -110,6 +109,60 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void signIn() {}
-  void registerUser() {}
+  Future signIn() async {
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        )
+        .then((value) =>
+            const SnackBar(content: Center(child: Text('Signed In'))));
+  }
+
+  Future registerUser() async {
+    if (_passwordController.text != _confirmPasswordController.text) return;
+    await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        )
+        .then((value) => const SnackBar(
+            content: Center(child: Text('New account created'))));
+  }
+}
+
+class TextInput extends StatelessWidget {
+  const TextInput({
+    super.key,
+    required this.controller,
+    required this.label,
+    this.obscureText = false,
+  });
+  final TextEditingController controller;
+  final String label;
+  final bool obscureText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 2,
+              color: Colors.grey,
+            )
+          ]),
+      child: TextFormField(
+        obscureText: obscureText,
+        controller: controller,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          labelText: label,
+          contentPadding: const EdgeInsetsDirectional.all(16),
+        ),
+      ),
+    );
+  }
 }
