@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:organise_me/login_page.dart';
+import 'package:organise_me/pages/login_page.dart';
 
 import 'firebase_options.dart';
+import 'pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Organise Me',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        // primarySwatch: Colors.purple,
         scaffoldBackgroundColor: Colors.grey[200],
       ),
       home: StreamBuilder<User?>(
@@ -31,28 +32,6 @@ class MyApp extends StatelessWidget {
             if (snapshot.hasData) return const HomePage();
             return const LoginPage();
           }),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => FirebaseAuth.instance.signOut(),
-          child: const Text('Sign Out'),
-        ),
-      ),
     );
   }
 }
