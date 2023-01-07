@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import '../something_went_wrong.dart';
+import 'something_went_wrong.dart';
 import 'note_tile.dart';
 
 class NotesGrid extends StatelessWidget {
@@ -24,12 +24,12 @@ class NotesGrid extends StatelessWidget {
                 snapshot.data!.data() as Map<String, dynamic>;
 
             final List<Widget> notelist = [];
-            data.forEach((key, value) => notelist.add(
-                  NoteTile(
-                    title: value['title'],
-                    description: value['description'],
-                  ),
-                ));
+            data.forEach((key, value) {
+              notelist.add(NoteTile(
+                data: value,
+                index: key,
+              ));
+            });
             return StaggeredGrid.count(
               crossAxisCount: gridView ? 2 : 1,
               crossAxisSpacing: 8,

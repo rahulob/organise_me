@@ -1,27 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:organise_me/helper.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+  const BottomBar({super.key, this.index});
 
+  final String? index;
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
+  final _controller = TextEditingController();
   bool _iconsVisible = true;
-  final _noteController = TextEditingController();
-  @override
-  void dispose() {
-    _noteController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: AlignmentDirectional.bottomCenter,
       child: Container(
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(left: 8, right: 8),
         height: _iconsVisible ? 60 : 300,
         padding: const EdgeInsetsDirectional.all(8),
         decoration: BoxDecoration(
@@ -45,7 +43,7 @@ class _BottomBarState extends State<BottomBar> {
                     Expanded(
                       child: TextField(
                         autofocus: !_iconsVisible ? true : false,
-                        controller: _noteController,
+                        controller: _controller,
                         onTap: () => setState(() {
                           _iconsVisible = false;
                         }),
@@ -83,13 +81,13 @@ class _BottomBarState extends State<BottomBar> {
                 children: [
                   IconButton(
                     onPressed: () => setState(() {
-                      _noteController.text = '';
+                      _controller.text = '';
                       _iconsVisible = true;
                     }),
                     icon: const Icon(Icons.delete_forever, color: Colors.red),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: addNote,
                     icon: const Icon(Icons.save),
                   ),
                 ],
@@ -99,5 +97,24 @@ class _BottomBarState extends State<BottomBar> {
         ),
       ),
     );
+  }
+
+  void addNote() async {
+    final ref = FirebaseFirestore.instance
+        .collection("notes")
+        .doc("cwFz27aYho5irmdmtzoK");
+
+    await ref.set({
+      widget.index ?? '': {
+        "messages": {
+          getTimeString(): _controller.text.trim(),
+        }
+      }
+    }, SetOptions(merge: true)).then((_) {
+      setState(() {
+        _controller.text = '';
+        _iconsVisible = true;
+      });
+    });
   }
 }

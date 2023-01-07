@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/my_drawer.dart';
 import '../widgets/notes_grid.dart';
-import 'note_page.dart';
+import 'note_details_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -39,7 +39,13 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const NotePage()),
+                MaterialPageRoute(
+                  builder: (context) => const NoteDetailsPage(
+                    newNote: true,
+                    data: {},
+                    index: '',
+                  ),
+                ),
               ),
           icon: const Icon(Icons.add),
           label: const Text('Add Note')),
