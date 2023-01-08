@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:organise_me/helper.dart';
 import 'package:organise_me/widgets/bottom_bar.dart';
+import '../widgets/message_note.dart';
 import 'note_details_page.dart';
 
 class NotePage extends StatefulWidget {
@@ -46,7 +47,9 @@ class _NotePageState extends State<NotePage> {
         child: Column(
           children: [
             Expanded(
-              child: Column(
+              child: ListView(
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.15),
                 children: messageNotes(data['messages']),
               ),
             ),
@@ -58,11 +61,11 @@ class _NotePageState extends State<NotePage> {
   }
 }
 
-List<Widget> messageNotes(notes) {
+List<Widget> messageNotes(Map notes) {
   List<Widget> noteList = [];
-  notes.forEach((key, value) {
+  sortMapByKeys(notes).forEach((key, value) {
     noteList.add(
-      Text(value),
+      MessageNote(message: value),
     );
   });
   return noteList;
