@@ -1,17 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:organise_me/helper.dart';
+
+import '../helper.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key, this.index});
+  const BottomBar({
+    super.key,
+    this.index,
+    this.onAdded,
+  });
 
   final String? index;
+  final Function()? onAdded;
+
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   bool _iconsVisible = true;
 
   @override
@@ -20,7 +34,7 @@ class _BottomBarState extends State<BottomBar> {
       alignment: AlignmentDirectional.bottomCenter,
       child: Container(
         margin: const EdgeInsets.only(left: 8, right: 8),
-        height: _iconsVisible ? 60 : 300,
+        height: _iconsVisible ? 60 : 200,
         padding: const EdgeInsetsDirectional.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -103,18 +117,19 @@ class _BottomBarState extends State<BottomBar> {
     final ref = FirebaseFirestore.instance
         .collection("notes")
         .doc("cwFz27aYho5irmdmtzoK");
-
+    final key = getTimeString();
+    final value = _controller.text.trim();
     await ref.set({
       widget.index ?? '': {
         "messages": {
-          getTimeString(): _controller.text.trim(),
+          key: value,
         }
       }
     }, SetOptions(merge: true)).then((_) {
       setState(() {
         _controller.text = '';
-        _iconsVisible = true;
       });
+      widget.onAdded!();
     });
   }
 }

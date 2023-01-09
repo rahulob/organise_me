@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _gridView = true;
+  bool _gridView = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,11 +21,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () => setState(() => _gridView = !_gridView),
             icon: Icon(_gridView ? Icons.list : Icons.view_column),
-          ),
-          IconButton(
-            onPressed: () => setState(() => _gridView = !_gridView),
-            icon: const Icon(Icons.refresh_rounded),
-          ),
+          )
         ],
       ),
       drawer: const MyDrawer(),

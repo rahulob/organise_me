@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:organise_me/helper.dart';
 import 'package:organise_me/widgets/bottom_bar.dart';
 import '../widgets/message_note.dart';
+import '../widgets/something_went_wrong.dart';
 import 'note_details_page.dart';
 
 class NotePage extends StatefulWidget {
@@ -18,15 +21,11 @@ class NotePage extends StatefulWidget {
 }
 
 class _NotePageState extends State<NotePage> {
-  final _messageController = TextEditingController();
   late final data = widget.data;
-
-  @override
-  void dispose() {
-    _messageController.dispose();
-    super.dispose();
-  }
-
+  final _listController = ScrollController();
+  final _notesRef = FirebaseFirestore.instance
+      .collection('notes')
+      .doc("cwFz27aYho5irmdmtzoK");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,31 +41,99 @@ class _NotePageState extends State<NotePage> {
           ),
           child: Text(data['title']),
         ),
+        actions: [
+          IconButton(
+            onPressed: deleteNote,
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red[600],
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width * 0.15),
-                children: messageNotes(data['messages']),
-              ),
+              child: StreamBuilder<DocumentSnapshot>(
+                  stream: _notesRef.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return const SomethingWentWrong();
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    Map<String, dynamic> data =
+                        snapshot.data!.data() as Map<String, dynamic>;
+                    data = data[widget.index] ?? {};
+                    if (data.isEmpty || data['messages'].isEmpty) {
+                      return const Text(
+                          'There is nothing here. Try adding some ideas!');
+                    }
+
+                    final List<Widget> notelist = [];
+                    sortMapByKeys(data['messages']).forEach((key, value) {
+                      notelist.add(MessageNote(
+                        message: value,
+                        onDelete: () => deleteMessage(key),
+                      ));
+                    });
+                    return ListView(
+                      controller: _listController,
+                      children: notelist,
+                    );
+                  }),
             ),
-            BottomBar(index: widget.index),
+            BottomBar(
+              index: widget.index,
+              onAdded: () => _listController
+                  .jumpTo(_listController.position.maxScrollExtent),
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-List<Widget> messageNotes(Map notes) {
-  List<Widget> noteList = [];
-  sortMapByKeys(notes).forEach((key, value) {
-    noteList.add(
-      MessageNote(message: value),
+  void deleteNote() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text('Delete Note'),
+          content: const Text('Are you sure, you want to delete this note?'),
+          actions: <Widget>[
+            TextButton(
+                child: const Text('NO'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+            TextButton(
+              child: const Text('YES'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+                await _notesRef.set(
+                  {
+                    widget.index ?? '': FieldValue.delete(),
+                  },
+                  SetOptions(merge: true),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
-  });
-  return noteList;
+  }
+
+  void deleteMessage(String index) async {
+    await _notesRef.set({
+      widget.index ?? '': {
+        "messages": {index: FieldValue.delete()}
+      }
+    }, SetOptions(merge: true));
+  }
 }

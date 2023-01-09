@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _registerUser = true;
   bool _showPassword = false;
-  bool _error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(32.0),
           child: SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 500),
+              constraints: const BoxConstraints(maxWidth: 500),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -118,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future registerUser() async {
     if (_passwordController.text != _confirmPasswordController.text) return;
+    // final uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -125,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
         )
         .then((value) => const SnackBar(
             content: Center(child: Text('New account created'))));
+    // await FirebaseFirestore.instance.collection("notes").add(uid);
   }
 }
 
