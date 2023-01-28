@@ -11,7 +11,7 @@ class MyDrawer extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ElevatedButton(
+            FilledButton(
               onPressed: () => FirebaseAuth.instance.signOut(),
               child: const Text('Sign Out'),
             ),

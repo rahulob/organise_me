@@ -8,17 +8,22 @@ class BottomBar extends StatefulWidget {
     super.key,
     this.index,
     this.onAdded,
+    this.messageId,
+    required this.controller,
   });
 
   final String? index;
+  final String? messageId;
   final Function()? onAdded;
+  final TextEditingController controller;
 
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
-  late final _controller = TextEditingController();
+  late final _controller = widget.controller;
+  final _focusNode = FocusNode();
 
   @override
   void dispose() {
@@ -33,62 +38,54 @@ class _BottomBarState extends State<BottomBar> {
     return Align(
       alignment: AlignmentDirectional.bottomCenter,
       child: Container(
-        // margin: const EdgeInsets.only(left: 8, right: 8),
         height: _iconsVisible ? 60 : 200,
-        padding: const EdgeInsetsDirectional.all(8),
+        padding: const EdgeInsetsDirectional.all(0),
         decoration: BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: Colors.grey[700] ?? Colors.grey),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: Container(
-                decoration: _iconsVisible
-                    ? null
-                    : BoxDecoration(
-                        border: Border.all(width: 2),
-                        borderRadius: BorderRadius.circular(25)),
-                child: Row(
-                  crossAxisAlignment: !_iconsVisible
-                      ? CrossAxisAlignment.start
-                      : CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autofocus: !_iconsVisible ? true : false,
-                        controller: _controller,
-                        onTap: () => setState(() {
-                          _iconsVisible = false;
-                        }),
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.all(8),
-                          hintText: 'Write what\'s on your mind',
-                          border: InputBorder.none,
+              child: Row(
+                crossAxisAlignment: !_iconsVisible
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      focusNode: _focusNode,
+                      autofocus: !_iconsVisible ? true : false,
+                      controller: _controller,
+                      onTap: () => setState(() {
+                        _iconsVisible = false;
+                      }),
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(8),
+                        hintText: 'Write what\'s on your mind',
+                        border: InputBorder.none,
+                      ),
+                      maxLines: null,
+                    ),
+                  ),
+                  Visibility(
+                    visible: _iconsVisible,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon:
+                              const Icon(Icons.attach_file_outlined, size: 20),
                         ),
-                        maxLines: null,
-                      ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.camera_alt_rounded, size: 20),
+                        ),
+                      ],
                     ),
-                    Visibility(
-                      visible: _iconsVisible,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.attach_file_outlined,
-                                size: 20),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon:
-                                const Icon(Icons.camera_alt_rounded, size: 20),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             Visibility(
@@ -100,6 +97,7 @@ class _BottomBarState extends State<BottomBar> {
                     onPressed: () => setState(() {
                       _controller.text = '';
                       _iconsVisible = true;
+                      _focusNode.unfocus();
                     }),
                     icon: const Icon(Icons.delete_forever, color: Colors.red),
                   ),

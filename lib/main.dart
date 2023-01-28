@@ -29,9 +29,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Organise Me',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          // primarySwatch: Colors.purple,
-          scaffoldBackgroundColor: Colors.grey[200],
+        theme: ThemeData.dark(
+          useMaterial3: true,
+          // primarySwatch: Colors.deepPurple,
+
+          // scaffoldBackgroundColor: Colors.grey[200],
         ),
         home: const HomeScreen(),
       ),

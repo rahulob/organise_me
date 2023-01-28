@@ -43,32 +43,54 @@ class _NoteDetailsPageState extends State<NoteDetailsPage> {
       body: Container(
         margin: const EdgeInsets.all(8),
         child: SingleChildScrollView(
-          child: Column(children: [
-            TextFormField(
-              controller: _titleController,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              decoration: const InputDecoration(
-                hintText: 'Untitled',
+          child: Column(
+            children: [
+              // Title
+              TextFormField(
+                controller: _titleController,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'Untitled',
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
+                autofocus: true,
+                maxLines: null,
               ),
-              autofocus: true,
-              maxLines: null,
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _descriptionController,
-              maxLines: null,
-              minLines: 5,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Description',
+              const SizedBox(height: 10),
+
+              // Description
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: null,
+                minLines: 5,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Description',
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: widget.newNote ? createNote : saveNote,
-              child: Text(widget.newNote ? 'Create Note' : 'Save'),
-            )
-          ]),
+              const SizedBox(height: 10),
+
+              // Buttons to save or cancel
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(widget.newNote ? 'Cancel' : 'Update'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: widget.newNote ? createNote : saveNote,
+                    child: Text(widget.newNote ? 'Create Note' : 'Update'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

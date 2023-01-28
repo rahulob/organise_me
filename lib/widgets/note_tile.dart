@@ -21,22 +21,25 @@ class NoteTile extends StatelessWidget {
           ),
         ),
       ),
-      child: Card(
-        margin: EdgeInsets.zero,
+      child: Container(
+        // shape: const OutlineInputBorder(),
+        // elevation: 1,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[700] ?? Colors.grey),
+          borderRadius: BorderRadius.circular(5),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(width: 8),
               Text(
                 data['title'],
                 style: const TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 5),
               Text(
                 data['description'],
                 style: const TextStyle(

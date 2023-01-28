@@ -46,6 +46,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   FormInput(
                     controller: _emailController,
                     label: 'Email',
+                    hint: 'eg: email@example.com',
                   ),
                   FormInput(
                     controller: _passwordController,
@@ -101,8 +102,8 @@ class _AuthScreenState extends State<AuthScreen> {
                   // Login Buttons
                   _isLoading
                       ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          style: ElevatedButton.styleFrom(
+                      : FilledButton(
+                          style: FilledButton.styleFrom(
                               minimumSize: const Size.fromHeight(45)),
                           onPressed: _registerUser ? registerUser : signIn,
                           child: _isLoading
@@ -177,35 +178,25 @@ class FormInput extends StatelessWidget {
     required this.controller,
     required this.label,
     this.obscureText = false,
+    this.hint,
   });
   final TextEditingController controller;
   final String label;
+  final String? hint;
   final bool obscureText;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 4, bottom: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        // boxShadow: const [
-        //   BoxShadow(
-        //     blurRadius: 2,
-        //     color: Colors.grey,
-        //   )
-      ),
+      margin: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         obscureText: obscureText,
         controller: controller,
         decoration: InputDecoration(
-            hintText: label,
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-              ),
-            ),
-            focusedBorder: const OutlineInputBorder()),
+          labelText: label,
+          hintText: hint,
+          border: const OutlineInputBorder(),
+        ),
       ),
     );
   }

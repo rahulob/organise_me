@@ -23,6 +23,8 @@ class NotePage extends StatefulWidget {
 class _NotePageState extends State<NotePage> {
   late final data = widget.data;
   final _listController = ScrollController();
+  final _messageInputController = TextEditingController();
+
   final _notesRef = FirebaseFirestore.instance
       .collection('notes')
       .doc("cwFz27aYho5irmdmtzoK");
@@ -81,6 +83,7 @@ class _NotePageState extends State<NotePage> {
                           createdAt: key,
                           message: value,
                           onDelete: () => deleteMessage(key),
+                          onEdit: () => editMessage(key),
                         ));
                       });
                       return ListView(
@@ -91,6 +94,7 @@ class _NotePageState extends State<NotePage> {
                     }),
               ),
               BottomBar(
+                controller: _messageInputController,
                 index: widget.index,
                 onAdded: () => _listController
                     .jumpTo(_listController.position.maxScrollExtent),
@@ -106,9 +110,10 @@ class _NotePageState extends State<NotePage> {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
+        return AlertDialog(
           title: const Text('Delete Note'),
-          content: const Text('Are you sure, you want to delete this note?'),
+          content: const Text(
+              'Are you sure, you want to delete this note? It could not be restored later!'),
           actions: <Widget>[
             TextButton(
                 child: const Text('NO'),
@@ -116,7 +121,10 @@ class _NotePageState extends State<NotePage> {
                   Navigator.of(context).pop();
                 }),
             TextButton(
-              child: const Text('YES'),
+              child: const Text(
+                'YES',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () async {
                 Navigator.of(context).pop();
                 Navigator.pop(context);
@@ -140,5 +148,9 @@ class _NotePageState extends State<NotePage> {
         "messages": {index: FieldValue.delete()}
       }
     }, SetOptions(merge: true));
+  }
+
+  void editMessage(String index) async {
+    //TODO
   }
 }
