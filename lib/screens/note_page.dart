@@ -52,46 +52,51 @@ class _NotePageState extends State<NotePage> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder<DocumentSnapshot>(
-                  stream: _notesRef.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const SomethingWentWrong();
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    Map<String, dynamic> data =
-                        snapshot.data!.data() as Map<String, dynamic>;
-                    data = data[widget.index] ?? {};
-                    if (data.isEmpty || data['messages'].isEmpty) {
-                      return const Text(
-                          'There is nothing here. Try adding some ideas!');
-                    }
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: _notesRef.snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const SomethingWentWrong();
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      Map<String, dynamic> data =
+                          snapshot.data!.data() as Map<String, dynamic>;
+                      data = data[widget.index] ?? {};
+                      if (data.isEmpty || data['messages'].isEmpty) {
+                        return const Text(
+                            'There is nothing here. Try adding some ideas!');
+                      }
 
-                    final List<Widget> notelist = [];
-                    sortMapByKeys(data['messages']).forEach((key, value) {
-                      notelist.add(MessageNote(
-                        message: value,
-                        onDelete: () => deleteMessage(key),
-                      ));
-                    });
-                    return ListView(
-                      controller: _listController,
-                      children: notelist,
-                    );
-                  }),
-            ),
-            BottomBar(
-              index: widget.index,
-              onAdded: () => _listController
-                  .jumpTo(_listController.position.maxScrollExtent),
-            ),
-          ],
+                      final List<Widget> notelist = [];
+                      sortMapByKeys(data['messages']).forEach((key, value) {
+                        notelist.add(MessageNote(
+                          createdAt: key,
+                          message: value,
+                          onDelete: () => deleteMessage(key),
+                        ));
+                      });
+                      return ListView(
+                        // crossAxisAlignment: CrossAxisAlignment.end,
+                        controller: _listController,
+                        children: notelist,
+                      );
+                    }),
+              ),
+              BottomBar(
+                index: widget.index,
+                onAdded: () => _listController
+                    .jumpTo(_listController.position.maxScrollExtent),
+              ),
+            ],
+          ),
         ),
       ),
     );

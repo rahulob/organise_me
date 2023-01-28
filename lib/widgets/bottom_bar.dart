@@ -33,7 +33,7 @@ class _BottomBarState extends State<BottomBar> {
     return Align(
       alignment: AlignmentDirectional.bottomCenter,
       child: Container(
-        margin: const EdgeInsets.only(left: 8, right: 8),
+        // margin: const EdgeInsets.only(left: 8, right: 8),
         height: _iconsVisible ? 60 : 200,
         padding: const EdgeInsetsDirectional.all(8),
         decoration: BoxDecoration(
@@ -41,6 +41,7 @@ class _BottomBarState extends State<BottomBar> {
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
               child: Container(
@@ -75,11 +76,13 @@ class _BottomBarState extends State<BottomBar> {
                         children: [
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(Icons.attach_file_outlined),
+                            icon: const Icon(Icons.attach_file_outlined,
+                                size: 20),
                           ),
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(Icons.camera_alt_rounded),
+                            icon:
+                                const Icon(Icons.camera_alt_rounded, size: 20),
                           ),
                         ],
                       ),

@@ -1,22 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:organise_me/screens/auth_screen.dart';
+import 'package:provider/provider.dart';
 import '../widgets/my_drawer.dart';
 import '../widgets/notes_grid.dart';
 import 'note_details_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   bool _gridView = false;
   @override
   Widget build(BuildContext context) {
+    // Check if user is signed in?
+    if (Provider.of<User?>(context)?.uid == null) {
+      return const AuthScreen();
+    }
+
+    // home screen
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Home Screen'),
         actions: [
           IconButton(
             onPressed: () => setState(() => _gridView = !_gridView),

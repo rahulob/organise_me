@@ -1,21 +1,21 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _AuthScreenState extends State<AuthScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   bool _registerUser = true;
   bool _showPassword = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,18 +43,18 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 30),
 
                   // Text Inputs
-                  TextInput(
+                  FormInput(
                     controller: _emailController,
                     label: 'Email',
                   ),
-                  TextInput(
+                  FormInput(
                     controller: _passwordController,
                     obscureText: !_showPassword,
                     label: 'Password',
                   ),
                   Visibility(
                     visible: _registerUser,
-                    child: TextInput(
+                    child: FormInput(
                       controller: _confirmPasswordController,
                       obscureText: !_showPassword,
                       label: 'Confirm Password',
@@ -62,29 +62,58 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   // checkbox to show/hide password
-                  // const SizedBox(height: 10),
-                  CheckboxListTile(
-                    title: const Text('Show Password'),
-                    value: _showPassword,
-                    onChanged: (_) => setState(() {
-                      _showPassword = !_showPassword;
-                    }),
-                    controlAffinity: ListTileControlAffinity.leading,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CheckboxListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text(
+                            'Show Password',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          value: _showPassword,
+                          onChanged: (_) => setState(() {
+                            _showPassword = !_showPassword;
+                          }),
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                      ),
+                      // TODO: Forgot password
+                      Visibility(
+                        visible: !_registerUser,
+                        child: Align(
+                          // alignment: Alignment.centerRight,
+                          child: TextButton(
+                            child: const Text(
+                              'Forgot Password?',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(),
+                            ),
+                            onPressed: () {},
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
 
+                  const SizedBox(height: 8),
                   // Login Buttons
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(45)),
-                    onPressed: _registerUser ? registerUser : signIn,
-                    child: Text(
-                      _registerUser ? 'Register' : 'Sign In',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  Column(
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(45)),
+                          onPressed: _registerUser ? registerUser : signIn,
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  _registerUser ? 'Register' : 'Sign In',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                        ),
+                  const SizedBox(height: 20),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(!_registerUser
@@ -107,13 +136,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future signIn() async {
+    setState(() {
+      _isLoading = true;
+    });
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        )
-        .then((value) =>
-            const SnackBar(content: Center(child: Text('Signed In'))));
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    )
+        .then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+      const SnackBar(content: Center(child: Text('Signed In')));
+    }).catchError((_) {
+      setState((() => _isLoading = false));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(_),
+      ));
+    });
   }
 
   Future registerUser() async {
@@ -130,8 +171,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class TextInput extends StatelessWidget {
-  const TextInput({
+class FormInput extends StatelessWidget {
+  const FormInput({
     super.key,
     required this.controller,
     required this.label,
@@ -144,24 +185,27 @@ class TextInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(top: 4, bottom: 4),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 2,
-              color: Colors.grey,
-            )
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        // boxShadow: const [
+        //   BoxShadow(
+        //     blurRadius: 2,
+        //     color: Colors.grey,
+        //   )
+      ),
       child: TextFormField(
         obscureText: obscureText,
         controller: controller,
         decoration: InputDecoration(
-          border: InputBorder.none,
-          labelText: label,
-          contentPadding: const EdgeInsetsDirectional.all(8),
-        ),
+            hintText: label,
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              ),
+            ),
+            focusedBorder: const OutlineInputBorder()),
       ),
     );
   }
