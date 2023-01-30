@@ -184,14 +184,13 @@ class PreviousMessage extends StatelessWidget {
               vertical: 4,
             ),
             decoration: BoxDecoration(
-              color: Color.fromARGB(90, 238, 238, 238),
+              color: const Color.fromARGB(90, 238, 238, 238),
               borderRadius: BorderRadius.circular(4),
             ),
             width: double.infinity,
             child: Text(
               message ?? '',
               textAlign: TextAlign.left,
-              // style: const TextStyle(color: Colors.black),
             ),
           ),
         ],
