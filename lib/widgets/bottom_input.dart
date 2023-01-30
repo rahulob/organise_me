@@ -10,6 +10,7 @@ class BottomInput extends StatefulWidget {
     this.messageId,
     required this.controller,
     this.previousMessage,
+    this.isIconsVisible,
   });
 
   // this will be present when we edit a certain note
@@ -19,6 +20,7 @@ class BottomInput extends StatefulWidget {
   final String? index;
   final TextEditingController controller;
   final Function()? onAdded;
+  final bool? isIconsVisible;
 
   @override
   State<BottomInput> createState() => _BottomInputState();
@@ -27,7 +29,7 @@ class BottomInput extends StatefulWidget {
 class _BottomInputState extends State<BottomInput> {
   // late final widget.controller = TextEditingController();
   final _focusNode = FocusNode();
-  bool _insertIconsVisible = true;
+  late bool _insertIconsVisible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,10 @@ class _BottomInputState extends State<BottomInput> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            PreviousMessage(message: widget.previousMessage),
+            PreviousMessage(
+              message: widget.previousMessage,
+              setIcons: () => setState(() => _insertIconsVisible = false),
+            ),
             Row(
               children: [
                 TextInput(
@@ -51,7 +56,7 @@ class _BottomInputState extends State<BottomInput> {
                   },
                 ),
                 Visibility(
-                  visible: _insertIconsVisible,
+                  visible: widget.isIconsVisible ?? _insertIconsVisible,
                   child: Row(
                     children: [
                       IconButton(
@@ -68,7 +73,7 @@ class _BottomInputState extends State<BottomInput> {
               ],
             ),
             Visibility(
-              visible: !_insertIconsVisible,
+              visible: !(widget.isIconsVisible ?? _insertIconsVisible),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -151,11 +156,13 @@ class TextInput extends StatelessWidget {
           focusNode: focusNode,
           onChanged: onChanged,
           controller: controller,
-          maxLines: null,
+          minLines: 1,
+          maxLines: 6,
           decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(8),
             hintText: "Write whats on your mind",
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
         ),
@@ -165,9 +172,10 @@ class TextInput extends StatelessWidget {
 }
 
 class PreviousMessage extends StatelessWidget {
-  const PreviousMessage({super.key, required this.message});
+  const PreviousMessage({super.key, required this.message, this.setIcons});
 
   final String? message;
+  final Function()? setIcons;
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +186,7 @@ class PreviousMessage extends StatelessWidget {
         children: [
           const Text("Previous Message"),
           Container(
+            height: MediaQuery.of(context).size.height * 0.1,
             margin: const EdgeInsets.only(top: 4, bottom: 12),
             padding: const EdgeInsets.symmetric(
               horizontal: 8,
@@ -188,9 +197,11 @@ class PreviousMessage extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
             ),
             width: double.infinity,
-            child: Text(
-              message ?? '',
-              textAlign: TextAlign.left,
+            child: SingleChildScrollView(
+              child: Text(
+                message ?? '',
+                textAlign: TextAlign.left,
+              ),
             ),
           ),
         ],

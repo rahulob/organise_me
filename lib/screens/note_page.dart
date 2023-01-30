@@ -107,6 +107,7 @@ class _NotePageBodyState extends State<NotePageBody> {
       _previousMessage; // used to display previous message over the bottom input
 
   final _bottomInputController = TextEditingController();
+  bool? _iconsVisible;
   final _listController = ScrollController();
   final _notesRef = FirebaseFirestore.instance
       .collection('notes')
@@ -165,11 +166,13 @@ class _NotePageBodyState extends State<NotePageBody> {
           messageId: _editMessageId,
           previousMessage: _previousMessage,
           index: widget.index,
+          isIconsVisible: _iconsVisible,
           onAdded: () {
             if (_editMessageId != null) {
               setState(() {
                 _editMessageId = null;
                 _previousMessage = null;
+                _iconsVisible = null;
               });
             } else {
               _listController.animateTo(
@@ -197,6 +200,7 @@ class _NotePageBodyState extends State<NotePageBody> {
       _editMessageId = index;
       _bottomInputController.text = message;
       _previousMessage = message;
+      _iconsVisible = false;
     });
   }
 }
