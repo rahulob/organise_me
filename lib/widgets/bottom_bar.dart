@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../helper.dart';
 
 class BottomBar extends StatefulWidget {
@@ -9,20 +8,22 @@ class BottomBar extends StatefulWidget {
     this.index,
     this.onAdded,
     this.messageId,
-    required this.controller,
+    this.message,
   });
 
-  final String? index;
+  // this will be present when we edit a certain note
   final String? messageId;
+  final String? message;
+
+  final String? index;
   final Function()? onAdded;
-  final TextEditingController controller;
 
   @override
   State<BottomBar> createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
-  late final _controller = widget.controller;
+  late final _controller = TextEditingController();
   final _focusNode = FocusNode();
 
   @override
@@ -61,9 +62,10 @@ class _BottomBarState extends State<BottomBar> {
                       onTap: () => setState(() {
                         _iconsVisible = false;
                       }),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(8),
-                        hintText: 'Write what\'s on your mind',
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(8),
+                        hintText:
+                            widget.message ?? 'Write what\'s on your mind',
                         border: InputBorder.none,
                       ),
                       maxLines: null,
@@ -94,11 +96,14 @@ class _BottomBarState extends State<BottomBar> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    onPressed: () => setState(() {
-                      _controller.text = '';
-                      _iconsVisible = true;
-                      _focusNode.unfocus();
-                    }),
+                    onPressed: () {
+                      setState(() {
+                        _controller.text = '';
+                        _iconsVisible = true;
+                        _focusNode.unfocus();
+                      });
+                      widget.onAdded!();
+                    },
                     icon: const Icon(Icons.delete_forever, color: Colors.red),
                   ),
                   IconButton(
@@ -118,7 +123,7 @@ class _BottomBarState extends State<BottomBar> {
     final ref = FirebaseFirestore.instance
         .collection("notes")
         .doc("cwFz27aYho5irmdmtzoK");
-    final key = getTimeString();
+    final key = widget.messageId ?? getTimeString();
     final value = _controller.text.trim();
     await ref.set({
       widget.index ?? '': {
@@ -129,6 +134,7 @@ class _BottomBarState extends State<BottomBar> {
     }, SetOptions(merge: true)).then((_) {
       setState(() {
         _controller.text = '';
+        _iconsVisible = true;
       });
       widget.onAdded!();
     });

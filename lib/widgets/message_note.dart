@@ -38,19 +38,13 @@ class MessageNote extends StatelessWidget {
       child: Align(
         alignment: Alignment.bottomRight,
         child: Container(
-          // width: MediaQuery.of(context).size.width,
-          // padding: const EdgeInsets.all(8),
           margin: EdgeInsets.only(
-            // bottom: 4,
-            left: MediaQuery.of(context).size.width * 0.1,
+            left: MediaQuery.of(context).size.width * 0.05,
           ),
-          // decoration: BoxDecoration(
-          //   borderRadius: BorderRadius.circular(10),
-          // ),
           child: Card(
             margin: const EdgeInsets.only(bottom: 4),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -62,7 +56,7 @@ class MessageNote extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    "${createdAt.substring(0, 10)}  ${createdAt.substring(11, 16)}",
+                    "${createdAt.substring(0, 10)} ${createdAt.substring(11, 16)}",
                     style: const TextStyle(
                       fontSize: 8,
                     ),
