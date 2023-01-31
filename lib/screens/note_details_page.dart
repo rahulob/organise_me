@@ -97,7 +97,9 @@ class _NoteDetailsPageState extends State<NoteDetailsPage> {
   }
 
   void createNote() async {
+    String noteIndex = getTimeString();
     String title = 'Untitled';
+
     if (_titleController.text != '') {
       title = _titleController.text.trim();
     }
@@ -105,7 +107,7 @@ class _NoteDetailsPageState extends State<NoteDetailsPage> {
         .collection("notes")
         .doc("cwFz27aYho5irmdmtzoK");
     await ref.set({
-      getTimeString(): {
+      noteIndex: {
         'title': title,
         'description': _descriptionController.text.trim(),
         'messages': {},

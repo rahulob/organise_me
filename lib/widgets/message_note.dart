@@ -25,7 +25,7 @@ class MessageNote extends StatelessWidget {
             onPressed: ((context) => onEdit()),
             icon: Icons.edit,
             backgroundColor: Colors.transparent,
-            // foregroundColor: Colors.black,
+            foregroundColor: Colors.grey,
           ),
           SlidableAction(
             onPressed: ((context) => onDelete()),
