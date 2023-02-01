@@ -47,6 +47,7 @@ class _BottomInputState extends State<BottomInput> {
               children: [
                 TextInput(
                   focusNode: _focusNode,
+                  onTapOutside: (_) => _focusNode.unfocus(),
                   controller: widget.controller,
                   onChanged: (value) => {
                     if (value.isNotEmpty)
@@ -77,19 +78,20 @@ class _BottomInputState extends State<BottomInput> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // delete editted message
                   IconButton(
                     onPressed: () {
                       setState(() {
                         widget.controller.text = '';
                         _insertIconsVisible = true;
-                        widget.onAdded!();
                       });
-                      widget.onAdded!();
+                      if (widget.messageId != null) widget.onAdded!();
                     },
                     icon: const Icon(Icons.delete_forever, color: Colors.red),
                   ),
+                  // save message
                   IconButton(
-                    onPressed: addNote,
+                    onPressed: saveNote,
                     icon: const Icon(Icons.save),
                   ),
                 ],
@@ -101,7 +103,7 @@ class _BottomInputState extends State<BottomInput> {
     );
   }
 
-  void addNote() async {
+  void saveNote() async {
     final ref = FirebaseFirestore.instance
         .collection("notes")
         .doc("cwFz27aYho5irmdmtzoK");
@@ -148,7 +150,7 @@ class TextInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: AnimatedSize(
-        // curve: Curves.easeIn,
+        curve: Curves.easeIn,
         duration: const Duration(milliseconds: 100),
         child: TextField(
           autofocus: autoFocus,

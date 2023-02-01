@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter/services.dart';
 
-class MessageNote extends StatelessWidget {
+class MessageNote extends StatefulWidget {
   const MessageNote({
     super.key,
     required this.message,
@@ -15,26 +15,17 @@ class MessageNote extends StatelessWidget {
   final Function() onEdit;
 
   @override
+  State<MessageNote> createState() => _MessageNoteState();
+}
+
+class _MessageNoteState extends State<MessageNote> {
+  Offset _tapPosition = Offset.zero;
+  @override
   Widget build(BuildContext context) {
-    return Slidable(
-      endActionPane: ActionPane(
-        extentRatio: 0.4,
-        motion: const ScrollMotion(),
-        children: [
-          SlidableAction(
-            onPressed: ((context) => onEdit()),
-            icon: Icons.edit,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.grey,
-          ),
-          SlidableAction(
-            onPressed: ((context) => onDelete()),
-            icon: Icons.delete,
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.red,
-          ),
-        ],
-      ),
+    return GestureDetector(
+      onTapDown: (details) =>
+          setState(() => _tapPosition = details.globalPosition),
+      onLongPress: () => showOptions(context),
       child: Align(
         alignment: Alignment.bottomRight,
         child: Container(
@@ -49,14 +40,14 @@ class MessageNote extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    message,
+                    widget.message,
                     style: const TextStyle(
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    "${createdAt.substring(0, 10)} ${createdAt.substring(11, 16)}",
+                    "${widget.createdAt.substring(0, 10)} ${widget.createdAt.substring(11, 16)}",
                     style: const TextStyle(
                       fontSize: 8,
                     ),
@@ -67,6 +58,48 @@ class MessageNote extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  showOptions(context) {
+    return showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        _tapPosition & const Size(40, 40),
+        Offset.zero & Size.infinite,
+      ),
+      items: [
+        PopupMenuItem(
+          onTap: widget.onEdit,
+          child: const ListTile(
+            leading: Icon(Icons.edit),
+            title: Text("Edit"),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: widget.message)).then(
+              (value) => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  duration: Duration(milliseconds: 500),
+                  content: Text("Copied to the clipboard!"),
+                ),
+              ),
+            );
+          },
+          child: const ListTile(
+            leading: Icon(Icons.copy),
+            title: Text("Copy"),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: widget.onDelete,
+          child: const ListTile(
+            leading: Icon(Icons.delete, color: Colors.red),
+            title: Text("Delete"),
+          ),
+        ),
+      ],
     );
   }
 }
