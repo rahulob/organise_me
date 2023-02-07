@@ -187,22 +187,26 @@ class PreviousMessage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("Previous Message"),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.1,
-            margin: const EdgeInsets.only(top: 4, bottom: 12),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 4,
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.2,
             ),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(90, 238, 238, 238),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            width: double.infinity,
-            child: SingleChildScrollView(
-              child: Text(
-                message ?? '',
-                textAlign: TextAlign.left,
+            child: Container(
+              margin: const EdgeInsets.only(top: 4, bottom: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(90, 238, 238, 238),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              width: double.infinity,
+              child: SingleChildScrollView(
+                child: Text(
+                  message ?? '',
+                  textAlign: TextAlign.left,
+                ),
               ),
             ),
           ),
